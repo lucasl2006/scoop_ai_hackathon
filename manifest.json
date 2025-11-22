@@ -2,12 +2,13 @@
   "name": "stock_predictor_app",
   "tools": [
     {
-      "name": "get_level2_data",
-      "description": "Fetch Level 2 (MBP-10) order book data",
+      "name": "get_candle_data",
+      "description": "Fetch candle data from Market Data",
       "input_schema": {
         "type": "object",
         "properties": {
           "symbol": { "type": "string" },
+          "interval": { "type": "string" },
           "start": { "type": "string" },
           "end": { "type": "string" }
         },

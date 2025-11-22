@@ -2,8 +2,8 @@ import torch
 import pandas as pd
 from spoon_ai.tools.base import BaseTool
 from typing import Any
-from pytorch_model import CandlePatternPredictor
-from feature_builder import compute_features
+from model.pytorch_model import CandlePatternPredictor
+from model.feature_builder import compute_features
 
 class CandlePredictionTool(BaseTool):
     name: str = "candle_predictor"
@@ -27,7 +27,7 @@ class CandlePredictionTool(BaseTool):
 
         # Compute features
         features = compute_features(df)
-        x = torch.tensor(features).unsqueeze(0)  # Add batch dimension
+        x = torch.tensor(features).float().unsqueeze(0)  # Add batch dimension
 
         # Initialize model if not yet done
         if self.model is None:
@@ -38,4 +38,7 @@ class CandlePredictionTool(BaseTool):
         # Run prediction
         with torch.no_grad():
             pred = self.model(x).item()
-        return {"prediction": pred}
+        return {
+            "prediction": pred,
+            "source": candle_csv_path
+            }
