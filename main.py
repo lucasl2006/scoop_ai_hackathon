@@ -1,4 +1,4 @@
-import asyncio
+'''import asyncio
 from agent.agent import build_agent
 
 async def main():
@@ -7,4 +7,4 @@ async def main():
     print(response)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(main())'''
