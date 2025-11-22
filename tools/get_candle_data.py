@@ -1,21 +1,45 @@
 import requests
 import pandas as pd
+from spoon_ai.tools.base import BaseTool
 
-def fetch_candle_data(symbol: str, interval: str = "1h", start: str = "2025-01-01", end: str = "2025-01-10") -> pd.DataFrame:
-    url = "https://api.marketdata.com/candles"
-    headers = {"Authorization": "Bearer YOUR_API_KEY"}  # replace with your Market Data free trial key
-    params = {
-        "symbol": symbol,
-        "interval": interval,
-        "start": start,
-        "end": end
+class FetchCandlesTool(BaseTool):
+    name: str = "fetch_candles"
+    description: str = "Fetch candlestick data from Market Data API"
+
+    parameters = {
+        "type": "object",
+        "properties": {
+            "symbol": {"type": "string"},
+            "interval": {"type": "string"},
+            "start": {"type": "string"},
+            "end": {"type": "string"}
+        },
+        "required": ["symbol", "interval", "start", "end"]
     }
-    response = requests.get(url, headers=headers, params=params)
-    response.raise_for_status()
-    data = response.json()
-    df = pd.DataFrame(data["candles"])
-    return df
 
-# Example usage:
-# candle_df = fetch_candle_data("AAPL")
-# print(candle_df.head())
+    async def execute(self, symbol: str, interval: str, start: str, end: str):
+        # Placeholder API endpoint
+        url = "https://api.marketdata.com/candles"
+
+        params = {
+            "symbol": symbol,
+            "interval": interval,
+            "start": start,
+            "end": end,
+            "apikey": "YOUR_API_KEY_HERE"
+        }
+
+        r = requests.get(url, params=params)
+        r.raise_for_status()
+
+        data = r.json()
+
+        # Normalize expected format
+        df = pd.DataFrame(data["candles"])
+        csv_path = "/mnt/data/fetched_candles.csv"
+        df.to_csv(csv_path, index=False)
+
+        return {
+            "status": "success",
+            "csv_path": csv_path
+        }

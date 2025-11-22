@@ -15,9 +15,6 @@ import yfinance as yf
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-import torch
-import torch.nn as nn
-
 class CandlePatternPredictor(nn.Module):
     def __init__(self, input_dim: int, hidden_dim: int = 64):
         super().__init__()
