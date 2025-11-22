@@ -15,16 +15,25 @@ import yfinance as yf
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-class OurModel(nn.Module):
-    def __init__(self, input_dim, hidden_dim=64):
+import torch
+import torch.nn as nn
+
+class CandlePatternPredictor(nn.Module):
+    def __init__(self, input_dim: int, hidden_dim: int = 64):
         super().__init__()
         self.fc = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),
             nn.ReLU(),
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
-            nn.Linear(hidden_dim, 1)  # output: next price movement (can be regression or classification)
+            nn.Linear(hidden_dim, 1)  # Predict next price movement
         )
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.fc(x)
+
+# Example:
+# input_dim = features.shape[1]
+# model = CandlePatternPredictor(input_dim)
+
+

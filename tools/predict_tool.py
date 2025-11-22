@@ -1,30 +1,41 @@
-from spoon_ai.tools.base import BaseTool
-from tools.feature_builder import build_features_from_orderbook
 import torch
-from pytorch_model import OurModel # might face issues with file paths
+import pandas as pd
+from spoon_ai.tools.base import BaseTool
+from typing import Any
+from pytorch_model import CandlePatternPredictor
+from feature_builder import compute_features
 
-class PredictTool(BaseTool):
-    name = "predict_price_movement"
-    description = "Predict next short-term price movement from Level-2 data"
+class CandlePredictionTool(BaseTool):
+    name: str = "candle_predictor"
+    description: str = "Predicts market reaction from candlestick patterns"
 
-    parameters = {
+    parameters: dict = {
         "type": "object",
         "properties": {
-            "l2_data": {"type": "array"}
+            "candle_csv_path": {"type": "string", "description": "Path to candlestick CSV file"}
         },
-        "required": ["l2_data"]
+        "required": ["candle_csv_path"]
     }
 
     def __init__(self):
         super().__init__()
-        self.top_k = 5
-        self.input_dim = self.top_k * 4 + 2
-        self.model = OurModel(self.input_dim)
-        self.model.eval()  # inference mode
+        self.model: Any = None  # Will be initialized lazily
 
-    async def execute(self, l2_data):
-        features = build_features_from_orderbook(l2_data, top_k=self.top_k)
-        x = torch.tensor(features).unsqueeze(0)  # batch of 1
+    async def execute(self, candle_csv_path: str) -> dict:
+        # Load CSV
+        df = pd.read_csv(candle_csv_path)
+
+        # Compute features
+        features = compute_features(df)
+        x = torch.tensor(features).unsqueeze(0)  # Add batch dimension
+
+        # Initialize model if not yet done
+        if self.model is None:
+            input_dim = features.shape[1]
+            self.model = CandlePatternPredictor(input_dim)
+            self.model.eval()  # Inference mode
+
+        # Run prediction
         with torch.no_grad():
             pred = self.model(x).item()
         return {"prediction": pred}
