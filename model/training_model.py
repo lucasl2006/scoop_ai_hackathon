@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
 
-from model.feature_builder import compute_features
+from model.new_feature_builder import compute_features
 from model.pytorch_model import CandlePatternPredictor
 
 # 1 Load your CSV with the rebound labels
@@ -13,8 +13,8 @@ def load_data(csv_path):
     df = pd.read_csv(csv_path)
 
     # Check rebound label
-    if "rebounded" not in df.columns:
-        raise ValueError("CSV must contain a 'rebounded' column with 0/1 labels.")
+    #if "rebounded" not in df.columns:
+    #    raise ValueError("CSV must contain a 'rebounded' column with 0/1 labels.")
 
     #shuffles rows
     df = df.sample(frac=1).reset_index(drop=True)
@@ -23,7 +23,7 @@ def load_data(csv_path):
     X = compute_features(df)
 
     # Target labels (0 or 1)
-    y = df["rebounded"].values.astype(np.float32)
+    y = df[:,0].values.astype(np.float32)
 
     return X, y
 
@@ -91,5 +91,5 @@ def train_model(csv_path, batch_size = 32, lr = 1e-3, epochs = 20):
 
 if __name__ == "__main__":
 
-    csv_path = "data/uploaded.csv"     # You can replace this with your path
+    csv_path = "data/bulls.csv"     # You can replace this with your path
     train_model(csv_path)
