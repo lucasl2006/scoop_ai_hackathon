@@ -16,20 +16,3 @@ class CandleAgent(ToolCallAgent):
         # Optional: add tool to fetch candles dynamically via API
     ])
 
-'''
-async def main():
-    agent = CandleAgent(
-        llm=ChatBot(
-            llm_provider="openai",
-            model_name="gpt-5.1"
-        )
-    )
-
-    # Use uploaded CSV file for prediction
-    candle_csv_path = "/mnt/data/9018a46c-c79d-4f8a-b0ff-ff7888f1ca1d.csv"
-    response = await agent.run(f"Predict the market reaction using this candle CSV: {candle_csv_path}")
-    print(response)
-
-if __name__ == "__main__":
-    asyncio.run(main())
-'''
