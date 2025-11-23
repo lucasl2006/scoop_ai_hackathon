@@ -37,8 +37,12 @@ class CandlePredictionTool(BaseTool):
 
         # Run prediction
         with torch.no_grad():
-            pred = self.model(x).item()
+            prob = self.model(x).item()
+            
+        pred = 1 if prob >= 0.5 else 0
+            
         return {
+            "probability": prob,
             "prediction": pred,
             "source": candle_csv_path
             }
